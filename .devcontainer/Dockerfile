@@ -1,0 +1,1 @@
+FROM wav2letter/wav2letter:inference-latest
