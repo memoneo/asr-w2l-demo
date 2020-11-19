@@ -12,7 +12,7 @@
 #include <functional>
 
 #include "inference/common/IOBuffer.h"
-#include "inference/examples/Util.h"
+#include "Util.h"
 
 namespace w2l {
 namespace streaming {

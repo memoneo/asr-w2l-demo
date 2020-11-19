@@ -5,12 +5,16 @@ add_library(StreamingInferenceExamples INTERFACE)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(cereal_INCLUDE_DIRS /root/wav2letter/build/inference/cereal/src/cereal/include)
+set(fbgemm_INCLUDE_DIRS 
+  /root/wav2letter/build/inference/inference/module/fbgemm/src/fbgemm/include
+  /root/wav2letter/build/inference/inference/module/fbgemm/src/fbgemm/third_party/cpuinfo/include)
+set(wav2letter-inference_SOURCE_DIR /root/wav2letter/inference)
+set(wav2letter++_SOURCE_DIR /root/wav2letter)
+
 add_library(util_example
   ${CMAKE_CURRENT_LIST_DIR}/Util.cpp
 )
-
-add_dependencies(util_example cereal)
-add_dependencies(util_example streaming_inference_common)
 
 find_package(Threads REQUIRED)
 
@@ -22,6 +26,9 @@ target_include_directories(
     ${wav2letter-inference_SOURCE_DIR}
     ${wav2letter++_SOURCE_DIR}/src
 )
+
+#add_dependencies(util_example cereal)
+#add_dependencies(util_example streaming_inference_common)
 
 target_link_libraries(
   util_example
@@ -39,6 +46,7 @@ target_include_directories(
   PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
     ${wav2letter-inference_SOURCE_DIR}
+    ${fbgemm_INCLUDE_DIRS}
 )
 
 target_link_libraries(
@@ -73,9 +81,5 @@ function(build_example TARGET SRCFILE)
   )
 endfunction(build_example)
 
-build_example(interactive_streaming_asr_example
-  ${CMAKE_CURRENT_LIST_DIR}/InteractiveStreamingASRExample.cpp)
 build_example(simple_streaming_asr_example
   ${CMAKE_CURRENT_LIST_DIR}/SimpleStreamingASRExample.cpp)
-build_example(multithreaded_streaming_asr_example
-  ${CMAKE_CURRENT_LIST_DIR}/MultithreadedStreamingASRExample.cpp)
