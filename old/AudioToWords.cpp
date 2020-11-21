@@ -11,7 +11,7 @@
 #include <fstream>
 #include <functional>
 
-#include "w2l/inference/common/IOBuffer.h"
+#include "inference/common/IOBuffer.h"
 #include "Util.h"
 
 namespace w2l {

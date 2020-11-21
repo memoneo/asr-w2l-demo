@@ -18,7 +18,7 @@
 #include <stdexcept>
 #include <string>
 
-#include <wav2letter-inference/inference/common/IOBuffer.h>
+#include "inference/common/IOBuffer.h"
 #include "libraries/decoder/Utils.h"
 
 namespace w2l {

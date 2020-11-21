@@ -1,85 +1,27 @@
 cmake_minimum_required(VERSION 3.5.1)
-project(StreamingInferenceExamples)
-add_library(StreamingInferenceExamples INTERFACE)
 
+project(w2l_cli)
+
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" )
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(cereal_INCLUDE_DIRS /root/wav2letter/build/inference/cereal/src/cereal/include)
-set(fbgemm_INCLUDE_DIRS 
-  /root/wav2letter/build/inference/inference/module/fbgemm/src/fbgemm/include
-  /root/wav2letter/build/inference/inference/module/fbgemm/src/fbgemm/third_party/cpuinfo/include)
-set(wav2letter-inference_SOURCE_DIR /root/wav2letter/inference)
-set(wav2letter++_SOURCE_DIR /root/wav2letter)
 
-add_library(util_example
-  ${CMAKE_CURRENT_LIST_DIR}/Util.cpp
-)
+find_package(Wav2Letter REQUIRED)
 
-find_package(Threads REQUIRED)
+add_executable(w2l_cli main.cpp)
 
 target_include_directories(
-  util_example
-  PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}
-    ${cereal_INCLUDE_DIRS}
-    ${wav2letter-inference_SOURCE_DIR}
-    ${wav2letter++_SOURCE_DIR}/src
-)
-
-#add_dependencies(util_example cereal)
-#add_dependencies(util_example streaming_inference_common)
-
-target_link_libraries(
-  util_example
-  PUBLIC
-    streaming_inference_common
-)
-
-# audio_to_words_example library is used by the example executables
-add_library(audio_to_words_example
-  ${CMAKE_CURRENT_LIST_DIR}/AudioToWords.cpp
-)
-
-target_include_directories(
-  audio_to_words_example
-  PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}
-    ${wav2letter-inference_SOURCE_DIR}
-    ${fbgemm_INCLUDE_DIRS}
-)
-
-target_link_libraries(
-  audio_to_words_example
-  PUBLIC
-    util_example
-    streaming_inference_modules_nn_backend
-    streaming_inference_decoder
-    decoder-library
-    Threads::Threads
-)
-
-function(build_example TARGET SRCFILE)
-  message(STATUS "Examples: add executable ${TARGET}")
-  add_executable(${TARGET}
-    ${SRCFILE}
-  )
-  add_dependencies(StreamingInferenceExamples ${TARGET})
-  target_include_directories(
-    ${TARGET}
+    w2l_cli
     PRIVATE
-      ${CMAKE_CURRENT_LIST_DIR}
-      ${GFLAGS_INCLUDE_DIRS}
-  )
-  target_link_libraries(
-    ${TARGET}
-    PRIVATE
-      streaming_inference_modules_nn_backend
-      streaming_inference_modules_feature
-      audio_to_words_example
-      ${GFLAGS_LIBRARIES}
-  )
-endfunction(build_example)
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${cereal_INCLUDE_DIRS}
+        ${WAV2LETTER_INCLUDE_DIRS}
+        ${WAV2LETTER_INFERENCE_INCLUDE_DIRS}
+)
 
-build_example(simple_streaming_asr_example
-  ${CMAKE_CURRENT_LIST_DIR}/SimpleStreamingASRExample.cpp)
+target_link_libraries(w2l_cli
+  ${WAV2LETTER_LIBRARIES}
+  ${WAV2LETTER_INFERENCE}
+)
