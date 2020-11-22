@@ -1,70 +1,3 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-/**
- * User guide
- * ----------
- *
- * 1. Setup the input files:
- * Assuming that you have the acoustic model, language model, features
- * extraction serialized streaming inference DNN, tokens file, lexicon file and
- * input audio file in a directory called model.
-
- *  $> ls ~/model
- *   acoustic_model.bin
- *   language.bin
- *   feat.bin
- *   tokens.txt
- *   lexicon.txt
- *
- * $> ls ~/audio
- *   input1.wav
- *
- * 2. Run as pipe:
- * cat ~/audio/input1.wav | simple_wav2letter_example
- *                                     --input_files_base_path ~/model
- *
- * Or specidy the input audio file:
- *
- * ./simple_wav2letter_example --input_files_base_path ~/model
- *                             --input_audio_file ~/audio/input1.wav
- *
- * Example output:
- * Started features model file loading ...
- * Completed features model file loading elapsed time=46557 microseconds
- *
- * Started acoustic model file loading ...
- * Completed acoustic model file loading elapsed time=2058 milliseconds
- *
- * Started tokens file loading ...
- * Completed tokens file loading elapsed time=1318 microseconds
- *
- * Tokens loaded - 9998 tokens
- * Started decoder options file loading ...
- * Completed decoder options file loading elapsed time=388 microseconds
- *
- * Started create decoder ...
- * [Letters] 9998 tokens loaded.
- * [Words] 200001 words loaded.
- * Completed create decoder elapsed time=884 milliseconds
- *
- *
- * #start (msec), end(msec), transcription
- * 0,1000,
- * 1000,2000,i wish he
- * 2000,3000,had never been to school
- * 3000,4000,missus
- * 4000,4260,began again brusquely
- * Completed converting audio input
- *
- */
-
 #include <fstream>
 #include <memory>
 #include <string>
@@ -74,9 +7,10 @@
 #include <cereal/archives/json.hpp>
 #include <gflags/gflags.h>
 
-#include "<wav2letter-inference/module/module.h>"
-#include <wav2letter-inference/inference/decoder/Decoder.h>
-#include <wav2letter-inference/module/feature/feature.h>
+#include "inference/module/feature/feature.h"
+
+#include "inference/decoder/Decoder.h"
+#include "inference/module/module.h"
 #include "inference/module/nn/nn.h"
 
 #include "AudioToWords.h"

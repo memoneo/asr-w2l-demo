@@ -46,3 +46,6 @@ _deps
 model/**
 build/
 .devcontainer/library-scripts
+w2l_cli
+*.m4a
+*.wav
