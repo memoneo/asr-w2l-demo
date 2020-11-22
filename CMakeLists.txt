@@ -12,16 +12,16 @@ find_package(Wav2Letter REQUIRED)
 
 add_executable(w2l_cli main.cpp)
 
+add_subdirectory(3rdparty)
+
 target_include_directories(
     w2l_cli
     PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
         ${cereal_INCLUDE_DIRS}
         ${WAV2LETTER_INCLUDE_DIRS}
-        ${WAV2LETTER_INFERENCE_INCLUDE_DIRS}
 )
 
 target_link_libraries(w2l_cli
-  ${WAV2LETTER_LIBRARIES}
-  ${WAV2LETTER_INFERENCE}
+  wav2letter-inference
 )
