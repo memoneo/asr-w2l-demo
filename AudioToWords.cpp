@@ -7,6 +7,7 @@
  */
 
 #include "AudioToWords.h"
+#include "base64/Base64.h"
 
 #include <fstream>
 #include <functional>
@@ -107,6 +108,29 @@ void audioStreamToWordsStream(
 }
 
 namespace {
+std::string audioBase64StringToWordsStringImpl(
+    const std::string& base64String,
+    std::shared_ptr<streaming::Sequential> dnnModule,
+    std::shared_ptr<const DecoderFactory> decoderFactory,
+    const DecoderOptions& decoderOptions,
+    int nTokens,
+    std::ostream* errorStream) {
+      std::string base64Decoded;
+      macaron::Base64::Decode(base64String, base64Decoded);
+
+      std::istringstream inputStream(base64Decoded);
+      std::ostringstream outputStream;
+
+      audioStreamToWordsStream(
+        inputStream,
+        outputStream,
+        dnnModule,
+        decoderFactory,
+        decoderOptions,
+        nTokens);
+
+      return outputStream.str();
+    }
 
 void audioFileToWordsFileImpl(
     const std::string& inputFileName,
@@ -150,6 +174,22 @@ void audioFileToWordsFileImpl(
 }
 
 } // namespace
+
+void audioBase64StringToWordsString(
+    const std::string& base64String,
+    std::shared_ptr<streaming::Sequential> dnnModule,
+    std::shared_ptr<const DecoderFactory> decoderFactory,
+    const DecoderOptions& decoderOptions,
+    int nTokens,
+    std::ostream& errorStream) {
+  audioBase64StringToWordsStringImpl(
+      base64String,
+      dnnModule,
+      decoderFactory,
+      decoderOptions,
+      nTokens,
+      &errorStream);
+}
 
 void audioFileToWordsFile(
     const std::string& inputFileName,

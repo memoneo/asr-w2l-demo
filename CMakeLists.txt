@@ -45,6 +45,7 @@ target_include_directories(
   audio_to_words_example
   PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
+    3rdparty/base64
 )
 
 target_link_libraries(
