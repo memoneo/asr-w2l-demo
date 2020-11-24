@@ -7,7 +7,7 @@
  */
 
 #include "AudioToWords.h"
-#include "base64/Base64.h"
+#include "Base64.h"
 
 #include <fstream>
 #include <functional>
