@@ -1,6 +1,7 @@
 {
     "cmake.configureOnOpen": false,
     "files.associations": {
+        "*.css": "postcss",
         "cctype": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
@@ -60,6 +61,7 @@
         "utility": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "string_view": "cpp"
     }
 }

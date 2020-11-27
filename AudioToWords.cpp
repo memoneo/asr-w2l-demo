@@ -235,21 +235,20 @@ namespace w2l
 
     } // namespace
 
-    void audioBase64StringToWordsString(
+    std::string audioBase64StringToWordsString(
         const std::string &base64String,
         std::shared_ptr<streaming::Sequential> dnnModule,
         std::shared_ptr<const DecoderFactory> decoderFactory,
         const DecoderOptions &decoderOptions,
-        int nTokens,
-        std::ostream &errorStream)
+        int nTokens)
     {
-      audioBase64StringToWordsStringImpl(
+      return audioBase64StringToWordsStringImpl(
           base64String,
           dnnModule,
           decoderFactory,
           decoderOptions,
           nTokens,
-          &errorStream);
+          nullptr);
     }
 
     std::string audioFileToWordsString(
@@ -257,8 +256,7 @@ namespace w2l
         std::shared_ptr<streaming::Sequential> dnnModule,
         std::shared_ptr<const DecoderFactory> decoderFactory,
         const DecoderOptions &decoderOptions,
-        int nTokens,
-        std::ostream &errorStream)
+        int nTokens)
     {
       return audioFileToWordsStringImpl(
           inputFileName,
@@ -266,7 +264,7 @@ namespace w2l
           decoderFactory,
           decoderOptions,
           nTokens,
-          &errorStream);
+          nullptr);
     }
 
     void audioFileToWordsFile(

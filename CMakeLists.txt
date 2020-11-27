@@ -11,7 +11,6 @@ set(cereal_INCLUDE_DIRS /root/wav2letter/build/inference/cereal/src/cereal/inclu
 find_package(Wav2Letter REQUIRED)
 find_package(Threads REQUIRED)
 find_package(GFLAGS REQUIRED)
-find_package(Drogon CONFIG REQUIRED)
 
 add_subdirectory(3rdparty)
 
@@ -26,15 +25,6 @@ add_executable(w2l
   ${CMAKE_CURRENT_LIST_DIR}/AudioToWords.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Util.cpp
 )
-
-if(CMAKE_CXX_STANDARD LESS 17)
-  message(STATUS "use c++14")
-  find_package(Boost 1.61.0 REQUIRED)
-  target_include_directories(w2l PRIVATE ${Boost_INCLUDE_DIRS})
-else()
-  message(STATUS "use c++17")
-endif()
-
 
 target_link_libraries(
   w2l_lib
@@ -51,7 +41,8 @@ target_link_libraries(
     w2l
     PRIVATE
     w2l_lib
-    Drogon::Drogon
+    rpc
+    ${GFLAGS_LIBRARIES}
 )
 
 target_include_directories(
@@ -62,4 +53,6 @@ target_include_directories(
     ${wav2letter-inference_SOURCE_DIR}
     ${wav2letter++_SOURCE_DIR}/src
     3rdparty/base64
+    3rdparty/rpclib/include
+    ${GFLAGS_INCLUDE_DIRS}
 )

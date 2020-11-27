@@ -8,7 +8,7 @@
 #include "Util.h"
 
 namespace w2l {
-namespace streaming {
+namespace inputfiles {
         std::shared_ptr<streaming::Sequential> loadAcousticModule(std::string fileName);
         std::shared_ptr<streaming::Sequential> loadDnnModule(
             std::shared_ptr<streaming::Sequential> featureModule, 
@@ -16,7 +16,7 @@ namespace streaming {
         std::shared_ptr<streaming::Sequential> loadFeatureModule(std::string fileName);
         DecoderOptions loadDecoderOptions(std::string fileName);
         std::vector<std::string> loadTokens(std::string fileName);
-        std::shared_ptr<const DecoderFactory> createDecoderFactory(std::string fileName, std::string lexiconFile, std::string languageModelFile);
+        std::shared_ptr<const streaming::DecoderFactory> createDecoderFactory(std::string fileName, std::string lexiconFile, std::string languageModelFile);
     }
 }
 

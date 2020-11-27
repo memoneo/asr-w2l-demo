@@ -49,3 +49,4 @@ build/
 w2l_cli
 *.m4a
 *.wav
+3rdparty/rpclib

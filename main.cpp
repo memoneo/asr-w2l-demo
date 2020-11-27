@@ -4,17 +4,18 @@
 #include <vector>
 
 #include <gflags/gflags.h>
-#include <drogon/HttpAppFramework.h>
+#include "rpc/server.h"
 
 #include "AudioToWords.h"
 #include "w2l.h"
 
 using namespace w2l;
 using namespace w2l::streaming;
+using namespace w2l::inputfiles;
 
 DEFINE_string(
     input_files_base_path,
-    ".",
+    "./model",
     "path is added as prefix to input files unless the input file"
     " is a full path.");
 DEFINE_string(
@@ -49,12 +50,34 @@ DEFINE_string(
     ", language model weight, word insertion score, unknown word insertion score"
     ", silence insertion score, and use logadd when merging decoder nodes");
 
-std::string GetInputFileFullPath(const std::string& fileName) {
-  return GetFullPath(fileName, FLAGS_input_files_base_path);
+std::string GetInputFileFullPath(const std::string &fileName)
+{
+    return GetFullPath(fileName, FLAGS_input_files_base_path);
 }
 
-int main(int argc, char* argv[]) {
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
+int main(int argc, char *argv[])
+{
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  return 0;
+    auto acousticModule = loadAcousticModule(FLAGS_acoustic_module_file);
+    auto featureModule = loadFeatureModule(FLAGS_feature_module_file);
+    auto dnnModule = loadDnnModule(featureModule, acousticModule);
+    auto decoderOptions = loadDecoderOptions(FLAGS_decoder_options_file);
+    auto tokens = loadTokens(FLAGS_tokens_file);
+    auto decoderFactory = createDecoderFactory(FLAGS_tokens_file, FLAGS_lexicon_file, FLAGS_language_model_file);
+
+    int nTokens = tokens.size();
+    std::cout << "Tokens loaded - " << nTokens << " tokens" << std::endl;
+
+    rpc::server srv(8080);
+
+    srv.bind("transcribe", [&](std::string base64EncodedAudio) {
+        //audioFileToWordsString("test", dnnModule, decoderFactory, decoderOptions, nTokens);
+
+        return "swigswag";
+    });
+
+    srv.run();
+
+    return 0;
 }
