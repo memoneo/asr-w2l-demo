@@ -3,18 +3,11 @@
 #include <string>
 #include <vector>
 
-#include <cereal/archives/binary.hpp>
-#include <cereal/archives/json.hpp>
 #include <gflags/gflags.h>
-
-#include "inference/module/feature/feature.h"
-
-#include "inference/decoder/Decoder.h"
-#include "inference/module/module.h"
-#include "inference/module/nn/nn.h"
+#include <drogon/HttpAppFramework.h>
 
 #include "AudioToWords.h"
-#include "Util.h"
+#include "w2l.h"
 
 using namespace w2l;
 using namespace w2l::streaming;
@@ -62,137 +55,6 @@ std::string GetInputFileFullPath(const std::string& fileName) {
 
 int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
-
-  std::shared_ptr<streaming::Sequential> featureModule;
-  std::shared_ptr<streaming::Sequential> acousticModule;
-
-  // Read files
-  {
-    TimeElapsedReporter feturesLoadingElapsed("features model file loading");
-    std::ifstream featFile(
-        GetInputFileFullPath(FLAGS_feature_module_file), std::ios::binary);
-    if (!featFile.is_open()) {
-      throw std::runtime_error(
-          "failed to open feature file=" +
-          GetInputFileFullPath(FLAGS_feature_module_file) + " for reading");
-    }
-    cereal::BinaryInputArchive ar(featFile);
-    ar(featureModule);
-  }
-
-  {
-    TimeElapsedReporter acousticLoadingElapsed("acoustic model file loading");
-    std::ifstream amFile(
-        GetInputFileFullPath(FLAGS_acoustic_module_file), std::ios::binary);
-    if (!amFile.is_open()) {
-      throw std::runtime_error(
-          "failed to open acoustic model file=" +
-          GetInputFileFullPath(FLAGS_feature_module_file) + " for reading");
-    }
-    cereal::BinaryInputArchive ar(amFile);
-    ar(acousticModule);
-  }
-
-  // String both modeles togthers to a single DNN.
-  auto dnnModule = std::make_shared<streaming::Sequential>();
-  dnnModule->add(featureModule);
-  dnnModule->add(acousticModule);
-
-  std::vector<std::string> tokens;
-  {
-    TimeElapsedReporter acousticLoadingElapsed("tokens file loading");
-    std::ifstream tknFile(GetInputFileFullPath(FLAGS_tokens_file));
-    if (!tknFile.is_open()) {
-      throw std::runtime_error(
-          "failed to open tokens file=" +
-          GetInputFileFullPath(FLAGS_tokens_file) + " for reading");
-    }
-    std::string line;
-    while (std::getline(tknFile, line)) {
-      tokens.push_back(line);
-    }
-  }
-  int nTokens = tokens.size();
-  std::cout << "Tokens loaded - " << nTokens << " tokens" << std::endl;
-
-  DecoderOptions decoderOptions;
-  {
-    TimeElapsedReporter decoderOptionsElapsed("decoder options file loading");
-    std::ifstream decoderOptionsFile(
-        GetInputFileFullPath(FLAGS_decoder_options_file));
-    if (!decoderOptionsFile.is_open()) {
-      throw std::runtime_error(
-          "failed to open decoder options file=" +
-          GetInputFileFullPath(FLAGS_decoder_options_file) + " for reading");
-    }
-    cereal::JSONInputArchive ar(decoderOptionsFile);
-    // TODO: factor out proper serialization functionality or Cereal
-    // specialization.
-    ar(cereal::make_nvp("beamSize", decoderOptions.beamSize),
-       cereal::make_nvp("beamSizeToken", decoderOptions.beamSizeToken),
-       cereal::make_nvp("beamThreshold", decoderOptions.beamThreshold),
-       cereal::make_nvp("lmWeight", decoderOptions.lmWeight),
-       cereal::make_nvp("wordScore", decoderOptions.wordScore),
-       cereal::make_nvp("unkScore", decoderOptions.unkScore),
-       cereal::make_nvp("silScore", decoderOptions.silScore),
-       cereal::make_nvp("eosScore", decoderOptions.eosScore),
-       cereal::make_nvp("logAdd", decoderOptions.logAdd),
-       cereal::make_nvp("criterionType", decoderOptions.criterionType));
-  }
-
-  std::vector<float> transitions;
-  if (!FLAGS_transitions_file.empty()) {
-    TimeElapsedReporter acousticLoadingElapsed("transitions file loading");
-    std::ifstream transitionsFile(
-        GetInputFileFullPath(FLAGS_transitions_file), std::ios::binary);
-    if (!transitionsFile.is_open()) {
-      throw std::runtime_error(
-          "failed to open transition parameter file=" +
-          GetInputFileFullPath(FLAGS_transitions_file) + " for reading");
-    }
-    cereal::BinaryInputArchive ar(transitionsFile);
-    ar(transitions);
-  }
-
-  std::shared_ptr<const DecoderFactory> decoderFactory;
-  // Create Decoder
-  {
-    TimeElapsedReporter acousticLoadingElapsed("create decoder");
-    decoderFactory = std::make_shared<DecoderFactory>(
-        GetInputFileFullPath(FLAGS_tokens_file),
-        GetInputFileFullPath(FLAGS_lexicon_file),
-        GetInputFileFullPath(FLAGS_language_model_file),
-        transitions,
-        SmearingMode::MAX,
-        FLAGS_silence_token,
-        0);
-  }
-
-  if (FLAGS_input_audio_file.empty()) {
-    TimeElapsedReporter feturesLoadingElapsed(
-        "converting audio input from stdin to text...");
-    audioStreamToWordsStream(
-        std::cin,
-        std::cout,
-        dnnModule,
-        decoderFactory,
-        decoderOptions,
-        nTokens);
-  } else {
-    const std::string input_audio_file =
-        GetInputFileFullPath(FLAGS_input_audio_file);
-    std::ifstream audioFile(input_audio_file, std::ios::binary);
-    TimeElapsedReporter feturesLoadingElapsed(
-        "converting audio input file=" + input_audio_file + " to text...");
-
-    audioStreamToWordsStream(
-        audioFile,
-        std::cout,
-        dnnModule,
-        decoderFactory,
-        decoderOptions,
-        nTokens);
-  }
 
   return 0;
 }

@@ -49,5 +49,12 @@ void audioFileToWordsFile(
     const DecoderOptions& decoderOptions,
     int nTokens);
 
+std::string audioFileToWordsString(
+    const std::string& inputFileName,
+    std::shared_ptr<streaming::Sequential> dnnModule,
+    std::shared_ptr<const DecoderFactory> decoderFactory,
+    const DecoderOptions& decoderOptions,
+    int nTokens);
+
 } // namespace streaming
 } // namespace w2l
