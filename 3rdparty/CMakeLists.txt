@@ -1,2 +1,2 @@
 add_subdirectory(wav2letter)
-add_subdirectory(rpclib)
+

@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.5.1)
 
-project(w2l_cli)
+set(project_name w2l) ## rename your project here
+
+project(${project_name})
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" )
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(cereal_INCLUDE_DIRS /root/wav2letter/build/inference/cereal/src/cereal/include)
@@ -11,23 +13,33 @@ set(cereal_INCLUDE_DIRS /root/wav2letter/build/inference/cereal/src/cereal/inclu
 find_package(Wav2Letter REQUIRED)
 find_package(Threads REQUIRED)
 find_package(GFLAGS REQUIRED)
+find_package(oatpp 1.2.0 REQUIRED)
 
 add_subdirectory(3rdparty)
 
-add_library(w2l_lib
-  ${CMAKE_CURRENT_LIST_DIR}/w2l.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/AudioToWords.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/Util.cpp
+add_library(${project_name}-lib
+  ${CMAKE_CURRENT_LIST_DIR}/src/w2l.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/AudioToWords.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/Util.cpp
 )
 
-add_executable(w2l
-  ${CMAKE_CURRENT_LIST_DIR}/main.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/AudioToWords.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/Util.cpp
+add_library(${project_name}-api-lib
+  src/AppComponent.hpp
+  src/controller/Controller.cpp
+  src/controller/Controller.hpp
+  src/dto/DTOs.hpp
+)
+
+target_link_libraries(${project_name}-api-lib
+    PUBLIC oatpp::oatpp
+)
+
+add_executable(${project_name}
+  ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
 )
 
 target_link_libraries(
-  w2l_lib
+  ${project_name}-lib
   PUBLIC
     streaming_inference_common
     streaming_inference_modules_nn_backend
@@ -38,21 +50,37 @@ target_link_libraries(
 )
 
 target_link_libraries(
-    w2l
+    ${project_name}
     PRIVATE
-    w2l_lib
-    rpc
+    oatpp::oatpp
+    ${project_name}-lib
+    ${project_name}-api-lib
     ${GFLAGS_LIBRARIES}
 )
 
+add_dependencies(${project_name} ${project_name}-lib)
+add_dependencies(${project_name} ${project_name}-api-lib)
+
 target_include_directories(
-  w2l_lib
+  ${project_name}
+  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/src
+)
+
+target_include_directories(
+  ${project_name}-lib
   PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
     ${cereal_INCLUDE_DIRS}
     ${wav2letter-inference_SOURCE_DIR}
     ${wav2letter++_SOURCE_DIR}/src
     3rdparty/base64
-    3rdparty/rpclib/include
     ${GFLAGS_INCLUDE_DIRS}
+)
+
+target_include_directories(
+  ${project_name}-api-lib
+  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}
+    src
 )
