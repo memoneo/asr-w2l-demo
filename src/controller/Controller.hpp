@@ -2,6 +2,7 @@
 #define Controller_hpp
 
 #include "dto/DTOs.hpp"
+#include "service/W2lService.hpp"
 
 #include "oatpp/web/server/api/ApiController.hpp"
 #include "oatpp/core/macro/codegen.hpp"
@@ -14,6 +15,8 @@
  */
 class Controller : public oatpp::web::server::api::ApiController
 {
+private:
+    W2lService m_w2lService;
 public:
     /**
    * Constructor with object mapper.
@@ -23,11 +26,7 @@ public:
         : oatpp::web::server::api::ApiController(objectMapper)
     {
     }
-private:
-    std::shared_ptr<w2l::streaming::Sequential> dnnModule;
-    DecoderOptions decoderOptions;
-    std::shared_ptr<const w2l::streaming::DecoderFactory> decoderFactory;
-    int nTokens;
+
 public:
     ENDPOINT("GET", "/", root)
     {

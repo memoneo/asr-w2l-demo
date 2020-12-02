@@ -28,10 +28,15 @@ add_library(${project_name}-api-lib
   src/controller/Controller.cpp
   src/controller/Controller.hpp
   src/dto/DTOs.hpp
+  src/W2lComponent.hpp
+  src/service/W2lService.cpp
+  src/service/W2lService.hpp
 )
 
 target_link_libraries(${project_name}-api-lib
-    PUBLIC oatpp::oatpp
+    PUBLIC 
+      oatpp::oatpp
+      ${project_name}-lib
 )
 
 add_executable(${project_name}
@@ -53,7 +58,6 @@ target_link_libraries(
     ${project_name}
     PRIVATE
     oatpp::oatpp
-    ${project_name}-lib
     ${project_name}-api-lib
     ${GFLAGS_LIBRARIES}
 )

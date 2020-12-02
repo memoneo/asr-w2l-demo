@@ -6,14 +6,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "AudioToWords.h"
+#include "AudioToWords.hpp"
 #include "Base64.h"
 
 #include <fstream>
 #include <functional>
 
 #include "inference/common/IOBuffer.h"
-#include "Util.h"
+#include "Util.hpp"
 
 namespace w2l
 {

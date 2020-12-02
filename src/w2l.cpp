@@ -12,8 +12,8 @@
 #include "inference/module/module.h"
 #include "inference/module/nn/nn.h"
 
-#include "AudioToWords.h"
-#include "Util.h"
+#include "AudioToWords.hpp"
+#include "Util.hpp"
 
 using namespace w2l;
 using namespace w2l::streaming;
