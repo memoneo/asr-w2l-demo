@@ -8,10 +8,8 @@
 #include "w2l.hpp"
 
 class W2lService {
-private:
-  OATPP_COMPONENT(std::shared_ptr<w2l::inputfiles::W2lHelper>, m_w2lHelper); // Inject database component
 public:
-  void transcribe(const std::string fileName);
+  OATPP_COMPONENT(std::shared_ptr<w2l::inputfiles::W2lHelper>, m_w2lHelper); // Inject database component
 };
 
 #endif //CRUD_W2LSERVICE_HPP

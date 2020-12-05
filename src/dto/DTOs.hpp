@@ -24,7 +24,7 @@ class SttRequestDto : public oatpp::DTO {
   
   DTO_INIT(SttRequestDto, DTO)
   
-  DTO_FIELD(String, encoded);
+  DTO_FIELD(String, fileName);
   
 };
 

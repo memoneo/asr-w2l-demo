@@ -14,15 +14,23 @@
 
 #include "AudioToWords.hpp"
 #include "Util.hpp"
+#include "w2l.hpp"
 
 using namespace w2l;
 using namespace w2l::streaming;
+using namespace w2l::helper;
+
+std::string W2lHelper::audioFileToText(std::string fileName)
+{
+  return audioFileToWordsString(fileName, dnnModule, decoderFactory, decoderOptions, nTokens);
+}
 
 namespace w2l
 {
-  namespace inputfiles
+  namespace helper
   {
-    std::shared_ptr<streaming::Sequential> loadDnnModule(
+    std::shared_ptr<streaming::Sequential>
+    loadDnnModule(
         std::shared_ptr<streaming::Sequential> featureModule,
         std::shared_ptr<streaming::Sequential> acousticModule)
     {

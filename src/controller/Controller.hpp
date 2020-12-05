@@ -8,20 +8,13 @@
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/macro/component.hpp"
 
-#include OATPP_CODEGEN_BEGIN(ApiController) //<-- Begin Codegen
+#include OATPP_CODEGEN_BEGIN(ApiController) 
 
-/**
- * Sample Api Controller.
- */
 class Controller : public oatpp::web::server::api::ApiController
 {
 private:
     W2lService m_w2lService;
 public:
-    /**
-   * Constructor with object mapper.
-   * @param objectMapper - default object mapper used to serialize/deserialize DTOs.
-   */
     Controller(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper))
         : oatpp::web::server::api::ApiController(objectMapper)
     {
@@ -47,14 +40,19 @@ public:
     }
     ENDPOINT("POST", "/stt", stt, BODY_DTO(Object<SttRequestDto>, requestDto))
     {
+        auto fileName = requestDto->fileName;
+
+        auto text = m_w2lService.m_w2lhelper.audioFileToText(fileName);
+        
         auto dto = SttResponseDto::createShared();
         dto->statusCode = 200;
         dto->message = "OK";
-        dto->text = requestDto->encoded;
+        dto->text = text;
+
         return createDtoResponse(Status::CODE_200, dto);
     }
 };
 
-#include OATPP_CODEGEN_END(ApiController) //<-- End Codegen
+#include OATPP_CODEGEN_END(ApiController)
 
 #endif /* Controller_hpp */

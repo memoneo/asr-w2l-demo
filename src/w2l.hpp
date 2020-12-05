@@ -9,7 +9,7 @@
 
 namespace w2l
 {
-    namespace inputfiles
+    namespace helper
     {
         class W2lHelper
         {
@@ -33,6 +33,7 @@ namespace w2l
                 this->decoderOptions = decoderOptions;
                 this->nTokens = nTokens;
             }
+            std::string audioFileToText(std::string filePath);
         };
 
         std::shared_ptr<streaming::Sequential> loadAcousticModule(std::string filePath);
