@@ -50,3 +50,6 @@ w2l_cli
 *.m4a
 *.wav
 3rdparty/rpclib
+audiofiles/uploads/*
+audiofiles/converted/*
+w2l

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include <gflags/gflags.h>
 #include <cereal/archives/binary.hpp>
 #include <cereal/archives/json.hpp>
 
@@ -20,9 +21,19 @@ using namespace w2l;
 using namespace w2l::streaming;
 using namespace w2l::helper;
 
+DEFINE_string(
+    audio_file_path,
+    "./audiofiles/converted",
+    "JSON file containing decoder options"
+    " including: max overall beam size, max beam for token selection, beam score threshold"
+    ", language model weight, word insertion score, unknown word insertion score"
+    ", silence insertion score, and use logadd when merging decoder nodes");
+
 std::string W2lHelper::audioFileToText(std::string fileName)
 {
-  return audioFileToWordsString(fileName, dnnModule, decoderFactory, decoderOptions, nTokens);
+  auto filePath = GetFullPath(fileName, FLAGS_audio_file_path);
+
+  return audioFileToWordsString(filePath, dnnModule, decoderFactory, decoderOptions, nTokens);
 }
 
 namespace w2l

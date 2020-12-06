@@ -7,7 +7,7 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
         libopenblas-dev && \
-        libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev
+        openssl libssl-dev
 
 RUN apt-get -y --purge remove cmake && \
     pip install cmake

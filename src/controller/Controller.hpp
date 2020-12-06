@@ -8,12 +8,13 @@
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/macro/component.hpp"
 
-#include OATPP_CODEGEN_BEGIN(ApiController) 
+#include OATPP_CODEGEN_BEGIN(ApiController)
 
 class Controller : public oatpp::web::server::api::ApiController
 {
 private:
     W2lService m_w2lService;
+
 public:
     Controller(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper))
         : oatpp::web::server::api::ApiController(objectMapper)
@@ -41,13 +42,20 @@ public:
     ENDPOINT("POST", "/stt", stt, BODY_DTO(Object<SttRequestDto>, requestDto))
     {
         auto fileName = requestDto->fileName;
+        if (!fileName)
+        {
+            auto dto = SttResponseDto::createShared();
+            dto->statusCode = 400;
+            dto->message = "fileName must be provided";
+            return createDtoResponse(Status::CODE_400, dto);
+        }
 
-        auto text = m_w2lService.m_w2lhelper.audioFileToText(fileName);
-        
+        auto text = m_w2lService.m_w2lHelper->audioFileToText(fileName->std_str());
+
         auto dto = SttResponseDto::createShared();
         dto->statusCode = 200;
         dto->message = "OK";
-        dto->text = text;
+        dto->text = oatpp::String(text.c_str());
 
         return createDtoResponse(Status::CODE_200, dto);
     }

@@ -29,12 +29,12 @@ namespace w2l
           int chunckStartTime,
           int chunckEndTime)
       {
-        output << chunckStartTime << "," << chunckEndTime << ",";
+        //output << chunckStartTime << "," << chunckEndTime << ",";
         for (const auto &wordUnit : wordUnits)
         {
           output << wordUnit.word << " ";
         }
-        output << std::endl;
+        //output << std::endl;
       }
 
     } // namespace
@@ -68,7 +68,7 @@ namespace w2l
       decoder.start();
       bool finish = false;
 
-      outputWordsStream << "#start (msec), end(msec), transcription" << std::endl;
+      //outputWordsStream << "#start (msec), end(msec), transcription" << std::endl;
       while (!finish)
       {
         int curChunkSize = readTransformStreamIntoBuffer<int16_t, float>(

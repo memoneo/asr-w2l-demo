@@ -1,7 +1,7 @@
 
 
-#ifndef CRUD_DATABASECOMPONENT_HPP
-#define CRUD_DATABASECOMPONENT_HPP
+#ifndef W2LCOMPONENT_HPP
+#define W2LCOMPONENT_HPP
 
 #include "w2l.hpp"
 #include <gflags/gflags.h>
@@ -47,7 +47,8 @@ DEFINE_string(
     ", language model weight, word insertion score, unknown word insertion score"
     ", silence insertion score, and use logadd when merging decoder nodes");
 
-using namespace w2l::inputfiles;
+using namespace w2l::helper;
+using namespace w2l::streaming;
 
 std::string GetInputFileFullPath(const std::string &fileName)
 {
@@ -57,7 +58,7 @@ std::string GetInputFileFullPath(const std::string &fileName)
 class W2lComponent {
 public:
 
-  OATPP_CREATE_COMPONENT(std::shared_ptr<w2l::inputfiles::W2lHelper>, w2lHelper)([] {
+  OATPP_CREATE_COMPONENT(std::shared_ptr<W2lHelper>, w2lHelper)([] {
 
     auto acousticModule = loadAcousticModule(GetInputFileFullPath(FLAGS_acoustic_module_file));
     auto featureModule = loadFeatureModule(GetInputFileFullPath(FLAGS_feature_module_file));
@@ -71,7 +72,7 @@ public:
     int nTokens = tokens.size();
     std::cout << "Tokens loaded - " << nTokens << " tokens" << std::endl;
 
-    return std::make_shared<w2l::inputfiles::W2lHelper>(dnnModule, decoderFactory, decoderOptions, nTokens);
+    return std::make_shared<W2lHelper>(dnnModule, decoderFactory, decoderOptions, nTokens);
 
   }());
 

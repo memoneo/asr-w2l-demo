@@ -9,6 +9,7 @@
 
 #include "./controller/Controller.hpp"
 #include "./AppComponent.hpp"
+#include "./W2lComponent.hpp"
 
 using namespace oatpp;
 
@@ -17,6 +18,8 @@ void run() {
 
   /* Register Components in scope of run() method */
   AppComponent components;
+
+  W2lComponent w2lComponent;
 
   /* Get router component */
   OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);

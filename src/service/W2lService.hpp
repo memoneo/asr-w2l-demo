@@ -9,7 +9,7 @@
 
 class W2lService {
 public:
-  OATPP_COMPONENT(std::shared_ptr<w2l::inputfiles::W2lHelper>, m_w2lHelper); // Inject database component
+  OATPP_COMPONENT(std::shared_ptr<w2l::helper::W2lHelper>, m_w2lHelper); // Inject database component
 };
 
 #endif //CRUD_W2LSERVICE_HPP
