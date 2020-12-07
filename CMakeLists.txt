@@ -17,34 +17,42 @@ find_package(oatpp 1.2.0 REQUIRED)
 
 add_subdirectory(3rdparty)
 
-add_library(${project_name}-lib
+add_library(${project_name}
   ${CMAKE_CURRENT_LIST_DIR}/src/w2l.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/AudioToWords.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/Util.cpp
 )
 
-add_library(${project_name}-api-lib
-  src/AppComponent.hpp
-  src/controller/Controller.cpp
-  src/controller/Controller.hpp
-  src/dto/DTOs.hpp
-  src/W2lComponent.hpp
-  src/service/W2lService.cpp
-  src/service/W2lService.hpp
+add_executable(${project_name}_http
+  src/http/AppComponent.hpp
+  src/http/controller/Controller.cpp
+  src/http/controller/Controller.hpp
+  src/http/dto/DTOs.hpp
+  src/http/http.cpp
+  src/http/W2lComponent.hpp
+  src/http/service/W2lService.cpp
+  src/http/service/W2lService.hpp
 )
 
-target_link_libraries(${project_name}-api-lib
+add_library(${project_name}_api
+  src/api.cpp
+  src/api.h
+)
+
+target_link_libraries(${project_name}_http
     PUBLIC 
       oatpp::oatpp
-      ${project_name}-lib
+      ${project_name}
 )
 
-add_executable(${project_name}
-  ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
+target_link_libraries(${project_name}_api
+    PUBLIC 
+      oatpp::oatpp
+      ${project_name}
 )
 
 target_link_libraries(
-  ${project_name}-lib
+  ${project_name}
   PUBLIC
     streaming_inference_common
     streaming_inference_modules_nn_backend
@@ -55,35 +63,33 @@ target_link_libraries(
 )
 
 target_link_libraries(
-    ${project_name}
+    ${project_name}_http
     PRIVATE
     oatpp::oatpp
-    ${project_name}-api-lib
     ${GFLAGS_LIBRARIES}
 )
 
-add_dependencies(${project_name} ${project_name}-lib)
-add_dependencies(${project_name} ${project_name}-api-lib)
+add_dependencies(${project_name}_http ${project_name})
+add_dependencies(${project_name}_api ${project_name})
 
 target_include_directories(
-  ${project_name}
+  ${project_name}_http
   PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/src
+    ${GFLAGS_INCLUDE_DIRS}
 )
 
 target_include_directories(
-  ${project_name}-lib
+  ${project_name}
   PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
     ${cereal_INCLUDE_DIRS}
     ${wav2letter-inference_SOURCE_DIR}
     ${wav2letter++_SOURCE_DIR}/src
-    3rdparty/base64
-    ${GFLAGS_INCLUDE_DIRS}
 )
 
 target_include_directories(
-  ${project_name}-api-lib
+  ${project_name}_http
   PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
     src

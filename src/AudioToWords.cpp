@@ -7,7 +7,6 @@
  */
 
 #include "AudioToWords.hpp"
-#include "Base64.h"
 
 #include <fstream>
 #include <functional>
@@ -121,6 +120,7 @@ namespace w2l
 
     namespace
     {
+      /*
       std::string audioBase64StringToWordsStringImpl(
           const std::string &base64String,
           std::shared_ptr<streaming::Sequential> dnnModule,
@@ -145,6 +145,7 @@ namespace w2l
 
         return outputStream.str();
       }
+      */
 
       std::string audioFileToWordsStringImpl(
           const std::string &inputFileName,
@@ -235,21 +236,21 @@ namespace w2l
 
     } // namespace
 
-    std::string audioBase64StringToWordsString(
-        const std::string &base64String,
-        std::shared_ptr<streaming::Sequential> dnnModule,
-        std::shared_ptr<const DecoderFactory> decoderFactory,
-        const DecoderOptions &decoderOptions,
-        int nTokens)
-    {
-      return audioBase64StringToWordsStringImpl(
-          base64String,
-          dnnModule,
-          decoderFactory,
-          decoderOptions,
-          nTokens,
-          nullptr);
-    }
+    // std::string audioBase64StringToWordsString(
+    //     const std::string &base64String,
+    //     std::shared_ptr<streaming::Sequential> dnnModule,
+    //     std::shared_ptr<const DecoderFactory> decoderFactory,
+    //     const DecoderOptions &decoderOptions,
+    //     int nTokens)
+    // {
+    //   return audioBase64StringToWordsStringImpl(
+    //       base64String,
+    //       dnnModule,
+    //       decoderFactory,
+    //       decoderOptions,
+    //       nTokens,
+    //       nullptr);
+    // }
 
     std::string audioFileToWordsString(
         const std::string &inputFileName,
