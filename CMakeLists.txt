@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.5.1)
+cmake_policy(VERSION 3.5.1)
 
 set(project_name w2l) ## rename your project here
 
@@ -12,7 +13,7 @@ set(cereal_INCLUDE_DIRS /root/wav2letter/build/inference/cereal/src/cereal/inclu
 
 find_package(Wav2Letter REQUIRED)
 find_package(Threads REQUIRED)
-find_package(GFLAGS REQUIRED)
+find_package(GFlags REQUIRED)
 find_package(oatpp 1.2.0 REQUIRED)
 
 add_subdirectory(3rdparty)
@@ -35,9 +36,16 @@ add_executable(${project_name}_http
 )
 
 add_library(${project_name}_api
+  SHARED
   src/api.cpp
   src/api.h
 )
+
+set_target_properties(fbgemm PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(streaming_inference_modules_nn_impl PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(streaming_inference_modules_nn_backend PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(${project_name} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(${project_name}_api PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_link_libraries(${project_name}_http
     PUBLIC 
@@ -47,7 +55,6 @@ target_link_libraries(${project_name}_http
 
 target_link_libraries(${project_name}_api
     PUBLIC 
-      oatpp::oatpp
       ${project_name}
 )
 
@@ -66,7 +73,7 @@ target_link_libraries(
     ${project_name}_http
     PRIVATE
     oatpp::oatpp
-    ${GFLAGS_LIBRARIES}
+    ${GFLAGS_LIBRARIES_STATIC}
 )
 
 add_dependencies(${project_name}_http ${project_name})

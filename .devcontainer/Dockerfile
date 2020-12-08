@@ -1,4 +1,4 @@
-FROM wav2letter/wav2letter:inference-latest
+FROM wav2letter/wav2letter:inference-e7c4d17
 
 RUN export KENLM_ROOT_DIR=/root/kenlm && \
     export MKLROOT=/opt/intel/mkl 
