@@ -6,7 +6,7 @@ set(project_name w2l) ## rename your project here
 project(${project_name})
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" )
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(cereal_INCLUDE_DIRS /root/wav2letter/build/inference/cereal/src/cereal/include)
@@ -36,25 +36,16 @@ add_executable(${project_name}_http
 )
 
 add_library(${project_name}_api
-  SHARED
+  STATIC
+  includes/api.h
   src/api.cpp
-  src/api.h
 )
 
-set_target_properties(fbgemm PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(streaming_inference_modules_nn_impl PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(streaming_inference_modules_nn_backend PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(${project_name} PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(${project_name}_api PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_include_directories(${project_name}_api PUBLIC ${CMAKE_CURRENT_LIST_DIR}/includes)
 
 target_link_libraries(${project_name}_http
     PUBLIC 
       oatpp::oatpp
-      ${project_name}
-)
-
-target_link_libraries(${project_name}_api
-    PUBLIC 
       ${project_name}
 )
 
@@ -70,14 +61,46 @@ target_link_libraries(
 )
 
 target_link_libraries(
+  ${project_name}_api
+  PUBLIC
+    ${project_name}
+    streaming_inference_common
+    streaming_inference_modules_nn_backend
+    streaming_inference_decoder
+    streaming_inference_modules_feature
+    decoder-library
+    Threads::Threads
+    wav2letter-inference
+    wav2letter-libraries
+)
+
+target_link_libraries(
     ${project_name}_http
     PRIVATE
-    oatpp::oatpp
     ${GFLAGS_LIBRARIES_STATIC}
 )
 
-add_dependencies(${project_name}_http ${project_name})
-add_dependencies(${project_name}_api ${project_name})
+set_target_properties(
+  ${project_name}
+  PROPERTIES
+  LINKER_LANGUAGE CXX
+  CXX_STANDARD 11
+)
+
+set_target_properties(
+  ${project_name}_api
+  PROPERTIES
+  LINKER_LANGUAGE CXX
+  CXX_STANDARD 11
+)
+
+#target_compile_options(${project_name} PRIVATE -fpie)
+#target_compile_options(${project_name}_api PUBLIC -fpie)
+
+#add_dependencies(${project_name}_http ${project_name})
+#add_dependencies(${project_name}_api ${project_name})
+add_dependencies(${project_name}_api cereal)
+add_dependencies(${project_name}_api fbgemm)
 
 target_include_directories(
   ${project_name}_http
@@ -96,8 +119,20 @@ target_include_directories(
 )
 
 target_include_directories(
+  ${project_name}_api
+  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}
+    ${cereal_INCLUDE_DIRS}
+    ${wav2letter-inference_SOURCE_DIR}
+    ${wav2letter++_SOURCE_DIR}/src
+)
+
+target_include_directories(
   ${project_name}_http
   PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
     src
 )
+
+add_custom_target(combined ALL
+   COMMAND ${CMAKE_CXX_ARCHIVE_CREATE} libcombined.a w2l_api streaming_inference_common)

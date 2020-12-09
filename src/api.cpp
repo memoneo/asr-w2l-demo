@@ -3,7 +3,7 @@
 
 using namespace w2l::helper;
 
-void *loadFiles(const char *acousticModuleFilePath,
+const void *loadHelper(const char *acousticModuleFilePath,
                 const char *featureModuleFilePath,
                 const char *decoderOptionsFilePath,
                 const char *tokensFilePath,
